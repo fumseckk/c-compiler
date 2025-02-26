@@ -82,11 +82,22 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 	}
 
 	@Override
+	public String visitForVarDef(SimpleCParser.ForVarDefContext ctx) {
+		return visit(ctx.varType) + " " + ctx.name.getText() + " = " + visit(ctx.expr);
+	}
+
+	@Override
+	public String visitForVarAssign(SimpleCParser.ForVarAssignContext ctx) {
+		return ctx.name.getText() + " = " + visit(ctx.expr);
+
+	}
+
+	@Override
 	public String visitForStatement(SimpleCParser.ForStatementContext ctx) {
 		String res = "for (";
 		if (ctx.initDef != null) res += visit(ctx.initDef);
 		else if (ctx.initAssign != null) res += visit(ctx.initAssign);
-		else res += ';';
+		res += "; ";
 		if (ctx.cond != null) res += visit(ctx.cond);
 		res += "; ";
 		if (ctx.incr != null) res += visit(ctx.incr);

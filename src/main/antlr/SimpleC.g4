@@ -37,16 +37,18 @@ statement :
 blockStatement : '{' statements+=statement* '}';
 // TODO add visitors for non-finished stmts to add them to for loop print
 varDefStatement : varType=type name=IDENTIFIER '=' expr=expression ';';
-varDefStatementNonFinished : varType=type name=IDENTIFIER '=' expr=expression;
+
 
 varDeclStatement : varType=type name=IDENTIFIER ';';
 
 varAssignStatement : name=IDENTIFIER '=' expr=expression ';';
-varAssignStatementNonFinished : name=IDENTIFIER '=' expr=expression;
 
 ifStatement : 'if' '(' expr=expression ')' stmt1=statement ('else' stmt2=statement)?;
 
-forStatement : 'for' '(' (initDef=varDefStatementNonFinished | initAssign=varAssignStatementNonFinished)? ';' cond=expression? ';' incr=varAssignStatement? ')' body=statement;
+forVarDef : varType=type name=IDENTIFIER '=' expr=expression;
+forVarAssign : name=IDENTIFIER '=' expr=expression;
+
+forStatement : 'for' '(' (initDef=forVarDef | initAssign=forVarAssign)? ';' cond=expression? ';' incr=forVarAssign? ')' body=statement;
 
 whileStatement : 'while' '(' cond=expression ')' body=statement;
 
