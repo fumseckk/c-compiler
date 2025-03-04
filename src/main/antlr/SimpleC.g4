@@ -35,7 +35,6 @@ statement :
     ;
 
 blockStatement : '{' statements+=statement* '}';
-// TODO add visitors for non-finished stmts to add them to for loop print
 varDefStatement : varType=type name=IDENTIFIER '=' expr=expression ';';
 
 

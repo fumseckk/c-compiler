@@ -14,7 +14,7 @@ class testFrontend {
 		IRTopLevel top = Compiler.frontend(tree);
 		assert(true);//Ok if no exception before
 	}
-	
+
 	@Test
 	void testParserAdd() {
 		testPattern("src/test/resources/add.sc");
@@ -54,4 +54,6 @@ class testFrontend {
 	void testParserPrint() {
 		testPattern("src/test/resources/print.sc");
 	}
+
+
 }

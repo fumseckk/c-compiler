@@ -3,31 +3,43 @@ package compiler.frontend;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Stack;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SymbolTable {
-	Stack<SymbolTableLevel> s;
+	List<SymbolTableLevel> levels;
+	Map<ParserRuleContext, SymbolTableLevel> obj_to_level;
 
 	public SymbolTable() {
-		s = new Stack<>();
-		s.push(new SymbolTableLevel());
+		levels = new ArrayList<>();
+		obj_to_level = new HashMap<>();
+		levels.add(new SymbolTableLevel(null)); // niveau 0 représentant le fichier entier
 	}
 	
 	public SymbolTableLevel initializeScope(ParserRuleContext ctx) {
-		s.push(new SymbolTableLevel());
-		return s.peek();
+		SymbolTableLevel lvl = new SymbolTableLevel(levels.getFirst());
+		levels.addFirst(lvl);
+		obj_to_level.put(ctx, lvl);
+		return lvl;
 	}
 	
 	public void finalizeScope() {
+		levels.removeFirst();
 	}
 	
-	public SymbolTableEntry insert(String name) {
-		return null;
+	public SymbolTableEntry insert(String symbol) {
+		if (this.lookup(symbol) != null) {
+			throw new RuntimeException("Variable `" + symbol + "` was re-declared.");
+		}
+		return levels.getFirst().insert(symbol);
 	}
 	
-	public SymbolTableEntry lookup(String name) {
-		return null;
+	public SymbolTableEntry lookup(String symbol) {
+		SymbolTableLevel curr = levels.getFirst();
+		while(curr != null && curr.lookup(symbol) == null) curr = curr.parent;
+		if (curr == null)
+			throw new RuntimeException("Variable `" + symbol + "` not found.");
+		return curr.lookup(symbol);
 	}
-	
 }
