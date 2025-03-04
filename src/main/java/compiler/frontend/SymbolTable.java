@@ -29,9 +29,6 @@ public class SymbolTable {
 	}
 	
 	public SymbolTableEntry insert(String symbol) {
-		if (this.lookup(symbol) != null) {
-			throw new RuntimeException("Variable `" + symbol + "` was re-declared.");
-		}
 		return levels.getFirst().insert(symbol);
 	}
 	

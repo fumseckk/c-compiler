@@ -17,15 +17,22 @@ public class testSymbol {
         assert(true);
     }
 
-
     @Test
     void testSymbol1() {
-        testPattern("src/test/resources/symboltest1.sc");
+        try {
+            testPattern("src/test/resources/symboltest1.sc");
+            assert(false);
+        }
+        catch (RuntimeException ignored) {}
     }
 
     @Test
     void testSymbol2() {
-        testPattern("src/test/resources/symboltest2.sc");
+        try {
+            testPattern("src/test/resources/symboltest2.sc");
+            assert(false);
+        }
+        catch (RuntimeException ignored) {}
     }
 
     @Test

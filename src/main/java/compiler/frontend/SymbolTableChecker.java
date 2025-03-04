@@ -16,6 +16,7 @@ public class SymbolTableChecker extends SimpleCBaseVisitor<Void> {
         for (SimpleCParser.FunctionArgumentContext a : ctx.args) {
             symbolTable.insert(a.name.getText());
         }
+        visit(ctx.body);
         symbolTable.finalizeScope();
         return null;
     }
