@@ -58,18 +58,33 @@ public class SimpleCPrinter extends SimpleCBaseVisitor<String> {
 	}
 
 	@Override
+	public String visitVarDef(SimpleCParser.VarDefContext ctx) {
+		return visit(ctx.varType) + " " + ctx.name.getText() + " = " + visit(ctx.expr);
+	}
+
+	@Override
 	public String visitVarDefStatement(SimpleCParser.VarDefStatementContext ctx) {
-		return visit(ctx.varType) + " " + ctx.name.getText() + " = " + visit(ctx.expr) + ";\n";
+		return visit(ctx.stmt) + ";\n";
+	}
+
+	@Override
+	public String visitVarDecl(SimpleCParser.VarDeclContext ctx) {
+		return visit(ctx.varType) + " " + ctx.name.getText();
 	}
 
 	@Override
 	public String visitVarDeclStatement(SimpleCParser.VarDeclStatementContext ctx) {
-		return visit(ctx.varType) + " " + ctx.name.getText() + ";\n";
+		return visit(ctx.stmt) + ";\n";
+	}
+
+	@Override
+	public String visitVarAssign(SimpleCParser.VarAssignContext ctx) {
+		return ctx.name.getText() + " = " + visit(ctx.expr);
 	}
 
 	@Override
 	public String visitVarAssignStatement(SimpleCParser.VarAssignStatementContext ctx) {
-		return ctx.name.getText() + " = " + visit(ctx.expr) + ";\n";
+		return visit(ctx.stmt) + ";\n";
 	}
 
 	@Override

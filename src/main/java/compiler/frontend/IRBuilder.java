@@ -171,23 +171,21 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 	 * 
 	 ****************************************************************************/ 
 
-	//TODO: varDecl / varDef / varAssign
-
 	@Override
-	public BuilderResult visitVarDefStatement(SimpleCParser.VarDefStatementContext ctx) {
+	public BuilderResult visitVarDef(SimpleCParser.VarDefContext ctx) {
 		visit(ctx.expr);
 		symbolTable.insert(ctx.name.getText());
 		return new BuilderResult(false, null, null, null);
 	}
 
 	@Override
-	public BuilderResult visitVarDeclStatement(SimpleCParser.VarDeclStatementContext ctx) {
+	public BuilderResult visitVarDecl(SimpleCParser.VarDeclContext ctx) {
 		symbolTable.insert(ctx.name.getText());
 		return new BuilderResult(false, null, null, null);
 	}
 
 	@Override
-	public BuilderResult visitVarAssignStatement(SimpleCParser.VarAssignStatementContext ctx) {
+	public BuilderResult visitVarAssign(SimpleCParser.VarAssignContext ctx) {
 		SymbolTableEntry entry = symbolTable.lookup(ctx.name.getText());
 		visit(ctx.expr);
 		return new BuilderResult(false, null, null, null);

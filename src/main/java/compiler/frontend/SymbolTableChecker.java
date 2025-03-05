@@ -32,20 +32,20 @@ public class SymbolTableChecker extends SimpleCBaseVisitor<Void> {
     }
 
     @Override
-    public Void visitVarDefStatement(SimpleCParser.VarDefStatementContext ctx) {
+    public Void visitVarDef(SimpleCParser.VarDefContext ctx) {
         visit(ctx.expr);
         symbolTable.insert(ctx.name.getText());
         return null;
     }
 
     @Override
-    public Void visitVarDeclStatement(SimpleCParser.VarDeclStatementContext ctx) {
+    public Void visitVarDecl(SimpleCParser.VarDeclContext ctx) {
         symbolTable.insert(ctx.name.getText());
         return null;
     }
 
     @Override
-    public Void visitVarAssignStatement(SimpleCParser.VarAssignStatementContext ctx) {
+    public Void visitVarAssign(SimpleCParser.VarAssignContext ctx) {
         symbolTable.lookup(ctx.name.getText());
         visit(ctx.expr);
         return null;

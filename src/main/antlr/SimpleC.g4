@@ -35,19 +35,22 @@ statement :
     ;
 
 blockStatement : '{' statements+=statement* '}';
-varDefStatement : varType=type name=IDENTIFIER '=' expr=expression ';';
 
+varDef : varType=type name=IDENTIFIER '=' expr=expression;
+varDefStatement : stmt=varDef ';';
 
-varDeclStatement : varType=type name=IDENTIFIER ';';
+varDecl : varType=type name=IDENTIFIER;
+varDeclStatement :  stmt=varDecl ';';
 
-varAssignStatement : name=IDENTIFIER '=' expr=expression ';';
+varAssign : name=IDENTIFIER '=' expr=expression;
+varAssignStatement : stmt=varAssign ';';
 
 ifStatement : 'if' '(' expr=expression ')' stmt1=statement ('else' stmt2=statement)?;
 
 forVarDef : varType=type name=IDENTIFIER '=' expr=expression;
 forVarAssign : name=IDENTIFIER '=' expr=expression;
 
-forStatement : 'for' '(' (initDef=forVarDef | initAssign=forVarAssign)? ';' cond=expression? ';' incr=forVarAssign? ')' body=statement;
+forStatement : 'for' '(' (initDef=varDef | initAssign=varAssign)? ';' cond=expression? ';' incr=varAssign? ')' body=statement;
 
 whileStatement : 'while' '(' cond=expression ')' body=statement;
 
