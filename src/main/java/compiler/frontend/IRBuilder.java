@@ -207,19 +207,6 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 	}
 
 	@Override
-	public BuilderResult visitForVarDef(SimpleCParser.ForVarDefContext ctx) {
-		symbolTable.insert(ctx.name.getText());
-		return null;
-	}
-
-	@Override
-	public BuilderResult visitForVarAssign(SimpleCParser.ForVarAssignContext ctx) {
-		symbolTable.lookup(ctx.name.getText());
-		visit(ctx.expr);
-		return null;
-	}
-
-	@Override
 	public BuilderResult visitForStatement(SimpleCParser.ForStatementContext ctx) {
 		symbolTable.initializeScope(ctx);
 		if (ctx.initDef != null) visit(ctx.initDef);
