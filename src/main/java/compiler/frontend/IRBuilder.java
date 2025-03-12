@@ -2,6 +2,7 @@ package compiler.frontend;
 
 import java.util.ArrayList;
 
+import ir.terminator.IRCondBr;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import antlr.SimpleCBaseVisitor;
@@ -79,6 +80,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		for (FunctionArgumentContext a : ctx.args) {
 			symbolTable.insert(a.name.getText());
 			argTypes.add(translateType(a.argType));
+			visit(a);
 		}
 		
 		//We instantiate a new function and add it in the toplevel
@@ -94,6 +96,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 		
 		//We connect the result with the entry block and seal the body
 		entryBlock.addTerminator(new IRGoto(body.entry));
+		// TODO seal
 
 		symbolTable.finalizeScope();
 		//Don't care about the value returned
@@ -102,7 +105,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 	
 	@Override
 	public BuilderResult visitStatement(StatementContext ctx) {
-		return this.visit(ctx.children.get(0));
+		return this.visit(ctx.children.getFirst());
 	}
 	
 	@Override
@@ -119,6 +122,7 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 			if (r.hasBlock) {
 				//We have to insert blocks from recursive call
 				current.addTerminator(new IRGoto(r.entry));
+				// TODO seal ?
 				current = r.exit;
 				currentBlock = current;
 			}
@@ -193,17 +197,33 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 	@Override
 	public BuilderResult visitIfStatement(SimpleCParser.IfStatementContext ctx) {
-		visit(ctx.expr);
+		IRBlock in = createBlock(currentFunction);
+		IRBlock out = createBlock(currentFunction);
 
+		// Set a new, current block before visiting
+		currentBlock.addTerminator(new IRGoto(in));
+		currentBlock = in;
+		BuilderResult cond = visit(ctx.expr);
+
+		// The "if" body is responsible for its own block
 		symbolTable.initializeScope(ctx);
-		visit(ctx.stmt1);
+		BuilderResult ifBody = visit(ctx.stmt1);
 		symbolTable.finalizeScope();
 
-		symbolTable.initializeScope(ctx);
-		visit(ctx.stmt2);
-		symbolTable.finalizeScope();
+		if (ctx.stmt2 == null) {
+			cond.exit.addTerminator(new IRCondBr(cond.value, ifBody.entry, out));
+			ifBody.exit.addTerminator(new IRGoto(out));
+		}
+		else {
+			symbolTable.initializeScope(ctx);
+			BuilderResult elseBody = visit(ctx.stmt2);
+			cond.exit.addTerminator(new IRCondBr(cond.value, ifBody.entry, elseBody.entry));
+			elseBody.exit.addTerminator(new IRGoto(out));
+			ifBody.exit.addTerminator(new IRGoto(out));
+			symbolTable.finalizeScope();
+		}
 
-		return null;
+		return new BuilderResult(true, in, out, null);
 	}
 
 	@Override
@@ -220,11 +240,19 @@ public class IRBuilder extends SimpleCBaseVisitor<BuilderResult> {
 
 	@Override
 	public BuilderResult visitWhileStatement(SimpleCParser.WhileStatementContext ctx) {
-		visit(ctx.cond);
+		IRBlock in = createBlock(currentFunction);
+		IRBlock out = createBlock(currentFunction);
+
+		// Set a new, current block before visiting
+		currentBlock.addTerminator(new IRGoto(in));
+		currentBlock = in;
+		BuilderResult cond = visit(ctx.cond);
+
 		symbolTable.initializeScope(ctx);
-		visit(ctx.body);
+		BuilderResult body = visit(ctx.body);
+		cond.exit.addTerminator(new IRCondBr(cond.value, body.entry, out));
 		symbolTable.finalizeScope();
-		return null;
+		return new BuilderResult(true, in, out, null);
 	}
 
 	@Override

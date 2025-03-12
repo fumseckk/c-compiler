@@ -45,12 +45,12 @@ varDeclStatement :  stmt=varDecl ';';
 varAssign : name=IDENTIFIER '=' expr=expression;
 varAssignStatement : stmt=varAssign ';';
 
-ifStatement : 'if' '(' expr=expression ')' stmt1=statement ('else' stmt2=statement)?;
+ifStatement : 'if' '(' expr=expression ')' stmt1=blockStatement ('else' stmt2=blockStatement)?;
 
 forVarDef : varType=type name=IDENTIFIER '=' expr=expression;
 forVarAssign : name=IDENTIFIER '=' expr=expression;
 
-forStatement : 'for' '(' (initDef=varDef | initAssign=varAssign)? ';' cond=expression? ';' incr=varAssign? ')' body=statement;
+forStatement : 'for' '(' (initDef=varDef | initAssign=varAssign)? ';' cond=expression? ';' incr=varAssign? ')' body=blockStatement;
 
 whileStatement : 'while' '(' cond=expression ')' body=statement;
 
